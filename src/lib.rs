@@ -2,25 +2,6 @@ extern crate core;
 
 use core::iter::Iterator;
 
-fn line(x0: isize, y0: isize, x1: isize, y1: isize) {
-    let dx = x1 - x0;
-    let dy = y1 - y0;
-    let mut diff = dy - dx;
-
-    let mut y = y0;
-
-    for x in x0..x1 {
-        println!("{},{}", x, y);
-
-        if diff >= 0 {
-            y = y + 1;
-            diff = diff - dx;
-        }
-        diff = diff + dy;
-    }
-    println!("DONE");
-}
-
 
 struct Bresenham {
     x: isize,
@@ -76,13 +57,13 @@ impl Iterator for Bresenham {
 
 #[cfg(test)]
 mod tests {
-    use super::{Bresenham, line};
-    #[test]
-    fn it_works() {
-        line(0, 1, 6, 4);
+    use super::Bresenham;
 
-        for p in Bresenham::new((0, 1), (6, 4)) {
-            println!("{},{}", p.0, p.1);
-        }
+    #[test]
+    fn test_wp_example() {
+        let bi = Bresenham::new((0, 1), (6, 4));
+        let res: Vec<_> = bi.collect();
+
+        assert_eq!(res, [(0, 1), (1, 1), (2, 2), (3, 2), (4, 3), (5, 3)])
     }
 }
