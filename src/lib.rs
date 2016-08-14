@@ -1,11 +1,47 @@
+//! Iterator-based Bresenham's line drawing algorithm
+//!
+//! [Bresenham's line drawing algorithm]
+//! (https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm) is fast
+//! algorithm to draw a line between two points. This crate implements the fast
+//! integer variant, using an iterator-based appraoch for flexibility. It
+//! calculates coordinates without knowing anything about drawing methods or
+//! surfaces.
+//!
+//! Example:
+//!
+//! ```rust
+//! extern crate bresenham;
+//! use bresenham::Bresenham;
+//!
+//! fn main() {
+//!     for (x, y) in Bresenham::new((0, 1), (6, 4)) {
+//!         println!("{}, {}", x, y);
+//!     }
+//! }
+//! ```
+//!
+//! Will print:
+//!
+//! ```text
+//! (0, 1)
+//! (1, 1)
+//! (2, 2)
+//! (3, 2)
+//! (4, 3)
+//! (5, 3)
+//! ```
+
 #![no_std]
 
 #[cfg(test)]
 extern crate std;
 
 use core::iter::Iterator;
+
+/// Convenient typedef for two machines-sized integers
 pub type Point = (isize, isize);
 
+/// Line-drawing iterator
 pub struct Bresenham {
     x: isize,
     y: isize,
@@ -79,6 +115,8 @@ impl Octant {
 }
 
 impl Bresenham {
+    /// Creates a new iterator.Yields intermediate points between `start`
+    /// and `end`. Does include `start` but not `end`.
     #[inline]
     pub fn new(start: Point, end: Point) -> Bresenham {
         let octant = Octant::from_points(start, end);

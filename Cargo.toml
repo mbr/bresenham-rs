@@ -1,6 +1,6 @@
 [package]
 name = "bresenham"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Marc Brinkmann <git@marcbrinkmann.de>"]
 license = "MIT"
 description = "A fast, iterator-based integer-only implementation of Bresenham's line algorithm."
