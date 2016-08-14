@@ -1,0 +1,6 @@
+[package]
+name = "bresenham"
+version = "0.1.0"
+authors = ["Marc Brinkmann <git@marcbrinkmann.de>"]
+
+[dependencies]
