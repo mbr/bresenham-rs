@@ -4,5 +4,7 @@ version = "0.1.0"
 authors = ["Marc Brinkmann <git@marcbrinkmann.de>"]
 license = "MIT"
 description = "A fast, iterator-based integer-only implementation of Bresenham's line algorithm."
+repository = "https://github.com/mbr/bresenham-rs"
+documentation = "https://mbr.github.io/bresenham-rs/bresenham"
 
 [dependencies]
