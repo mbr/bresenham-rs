@@ -80,7 +80,7 @@ impl Octant {
 
 impl Bresenham {
     #[inline]
-    fn new(start: Point, end: Point) -> Bresenham {
+    pub fn new(start: Point, end: Point) -> Bresenham {
         let octant = Octant::from_points(start, end);
 
         let start = octant.to_octant0(start);
