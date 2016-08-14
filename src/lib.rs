@@ -1,9 +1,9 @@
 extern crate core;
 
 use core::iter::Iterator;
-type Point = (isize, isize);
+pub type Point = (isize, isize);
 
-struct Bresenham {
+pub struct Bresenham {
     x: isize,
     y: isize,
     dx: isize,
@@ -16,8 +16,8 @@ struct Bresenham {
 struct Octant(u8);
 
 impl Octant {
-    #[inline]
     /// adapted from http://codereview.stackexchange.com/a/95551
+    #[inline]
     fn from_points(start: Point, end: Point) -> Octant {
         let mut dx = end.0 - start.0;
         let mut dy = end.1 - start.1;
