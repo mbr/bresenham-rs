@@ -1,4 +1,7 @@
-extern crate core;
+#![no_std]
+
+#[cfg(test)]
+extern crate std;
 
 use core::iter::Iterator;
 pub type Point = (isize, isize);
@@ -127,6 +130,7 @@ impl Iterator for Bresenham {
 #[cfg(test)]
 mod tests {
     use super::Bresenham;
+    use std::vec::Vec;
 
     #[test]
     fn test_wp_example() {
