@@ -144,7 +144,7 @@ impl Iterator for Bresenham {
 
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
-        if self.x >= self.x1 {
+        if self.x > self.x1 {
             return None;
         }
 
