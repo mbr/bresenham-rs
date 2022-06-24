@@ -191,10 +191,10 @@ impl Iterator for BresenhamInclusive {
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if self.0.x > self.0.x1 {
-            return None;
+            None
+        } else {
+            Some(self.0.advance())
         }
-
-        Some(self.0.advance())
     }
 }
 
