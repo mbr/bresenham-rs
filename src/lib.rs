@@ -170,6 +170,34 @@ impl Iterator for Bresenham {
     }
 }
 
+/// New type over `Bresenham` which include the `end` points when iterated over.
+pub struct BresenhamInclusive(Bresenham);
+impl BresenhamInclusive {
+    /// Creates a new iterator. Yields points `start..=end`.
+    #[inline]
+    pub fn new(start: Point, end: Point) -> Self {
+        Self(Bresenham::new(start, end))
+    }
+
+    /// Return the next point without checking if we are past `end`.
+    #[inline]
+    pub fn advance(&mut self) -> Point {
+        self.0.advance()
+    }
+}
+impl Iterator for BresenhamInclusive {
+    type Item = Point;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.0.x > self.0.x1 {
+            return None;
+        }
+
+        Some(self.0.advance())
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::Bresenham;
