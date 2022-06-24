@@ -204,6 +204,22 @@ mod tests {
     use std::vec::Vec;
 
     #[test]
+    fn test_empty() {
+        let bi = Bresenham::new((0, 0), (0, 0));
+        let res: Vec<_> = bi.collect();
+        assert_eq!(res, []);
+
+        let bi = BresenhamInclusive::new((0, 0), (0, 0));
+        let res: Vec<_> = bi.collect();
+        assert_eq!(res, [(0, 0)]);
+
+        let mut bi = BresenhamInclusive::new((0, 1), (0, 1));
+        bi.advance();
+        let res: Vec<_> = bi.collect();
+        assert_eq!(res, []);
+    }
+
+    #[test]
     fn test_wp_example() {
         let bi = Bresenham::new((0, 1), (6, 4));
         let res: Vec<_> = bi.collect();
