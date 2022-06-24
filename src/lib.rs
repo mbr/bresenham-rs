@@ -130,24 +130,17 @@ impl Bresenham {
         Bresenham {
             x: start.0,
             y: start.1,
-            dx: dx,
-            dy: dy,
+            dx,
+            dy,
             x1: end.0,
             diff: dy - dx,
-            octant: octant,
+            octant,
         }
     }
-}
 
-impl Iterator for Bresenham {
-    type Item = Point;
-
+    /// Return the next point without checking if we are past `end`.
     #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.x >= self.x1 {
-            return None;
-        }
-
+    pub fn advance(&mut self) -> Point {
         let p = (self.x, self.y);
 
         if self.diff >= 0 {
@@ -160,45 +153,119 @@ impl Iterator for Bresenham {
         // loop inc
         self.x += 1;
 
-        Some(self.octant.from_octant0(p))
+        self.octant.from_octant0(p)
     }
 }
 
+impl Iterator for Bresenham {
+    type Item = Point;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.x >= self.x1 {
+            None
+        } else {
+            Some(self.advance())
+        }
+    }
+}
+
+/// New type over `Bresenham` which include the `end` points when iterated over.
+pub struct BresenhamInclusive(Bresenham);
+impl BresenhamInclusive {
+    /// Creates a new iterator. Yields points `start..=end`.
+    #[inline]
+    pub fn new(start: Point, end: Point) -> Self {
+        Self(Bresenham::new(start, end))
+    }
+
+    /// Return the next point without checking if we are past `end`.
+    #[inline]
+    pub fn advance(&mut self) -> Point {
+        self.0.advance()
+    }
+}
+impl Iterator for BresenhamInclusive {
+    type Item = Point;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.0.x > self.0.x1 {
+            None
+        } else {
+            Some(self.0.advance())
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
-    use super::Bresenham;
+    use super::*;
     use std::vec::Vec;
+
+    #[test]
+    fn test_empty() {
+        let bi = Bresenham::new((0, 0), (0, 0));
+        let res: Vec<_> = bi.collect();
+        assert_eq!(res, []);
+
+        let bi = BresenhamInclusive::new((0, 0), (0, 0));
+        let res: Vec<_> = bi.collect();
+        assert_eq!(res, [(0, 0)]);
+
+        let mut bi = BresenhamInclusive::new((0, 1), (0, 1));
+        bi.advance();
+        let res: Vec<_> = bi.collect();
+        assert_eq!(res, []);
+    }
 
     #[test]
     fn test_wp_example() {
         let bi = Bresenham::new((0, 1), (6, 4));
         let res: Vec<_> = bi.collect();
+        assert_eq!(res, [(0, 1), (1, 1), (2, 2), (3, 2), (4, 3), (5, 3)]);
 
-        assert_eq!(res, [(0, 1), (1, 1), (2, 2), (3, 2), (4, 3), (5, 3)])
+        let bi = BresenhamInclusive::new((0, 1), (6, 4));
+        let res: Vec<_> = bi.collect();
+        assert_eq!(
+            res,
+            [(0, 1), (1, 1), (2, 2), (3, 2), (4, 3), (5, 3), (6, 4)]
+        )
     }
 
     #[test]
     fn test_inverse_wp() {
         let bi = Bresenham::new((6, 4), (0, 1));
         let res: Vec<_> = bi.collect();
+        assert_eq!(res, [(6, 4), (5, 4), (4, 3), (3, 3), (2, 2), (1, 2)]);
 
-        assert_eq!(res, [(6, 4), (5, 4), (4, 3), (3, 3), (2, 2), (1, 2)])
+        let bi = BresenhamInclusive::new((6, 4), (0, 1));
+        let res: Vec<_> = bi.collect();
+        assert_eq!(
+            res,
+            [(6, 4), (5, 4), (4, 3), (3, 3), (2, 2), (1, 2), (0, 1)]
+        );
     }
 
     #[test]
     fn test_straight_hline() {
         let bi = Bresenham::new((2, 3), (5, 3));
         let res: Vec<_> = bi.collect();
-
         assert_eq!(res, [(2, 3), (3, 3), (4, 3)]);
+
+        let bi = BresenhamInclusive::new((2, 3), (5, 3));
+        let res: Vec<_> = bi.collect();
+        assert_eq!(res, [(2, 3), (3, 3), (4, 3), (5, 3)]);
     }
 
     #[test]
     fn test_straight_vline() {
         let bi = Bresenham::new((2, 3), (2, 6));
         let res: Vec<_> = bi.collect();
-
         assert_eq!(res, [(2, 3), (2, 4), (2, 5)]);
+
+        let bi = BresenhamInclusive::new((2, 3), (2, 6));
+        let res: Vec<_> = bi.collect();
+        assert_eq!(res, [(2, 3), (2, 4), (2, 5), (2, 6)]);
     }
 }
