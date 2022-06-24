@@ -137,17 +137,10 @@ impl Bresenham {
             octant,
         }
     }
-}
 
-impl Iterator for Bresenham {
-    type Item = Point;
-
+    /// Return the next point without checking if we are past `end`.
     #[inline]
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.x >= self.x1 {
-            return None;
-        }
-
+    pub fn advance(&mut self) -> Point {
         let p = (self.x, self.y);
 
         if self.diff >= 0 {
@@ -160,10 +153,22 @@ impl Iterator for Bresenham {
         // loop inc
         self.x += 1;
 
-        Some(self.octant.from_octant0(p))
+        self.octant.from_octant0(p)
     }
 }
 
+impl Iterator for Bresenham {
+    type Item = Point;
+
+    #[inline]
+    fn next(&mut self) -> Option<Self::Item> {
+        if self.x >= self.x1 {
+            None
+        } else {
+            Some(self.advance())
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {
